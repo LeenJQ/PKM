@@ -1,2 +1,14 @@
+#依赖库
 node_modules
-client/build
+./node_modules
+./plugins/niu-loader/node_modules
+/node_modules/
+node_module
+.DS_Store
+__MACOSX
+dist
+www
+*.zip
+
+#编译文件夹
+dist

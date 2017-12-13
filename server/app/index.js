@@ -13,4 +13,4 @@ app
   .use(rest.allowedMethods())
   .use(logger());
 
-app.listen(3002);
+app.listen(3000);
