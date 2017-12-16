@@ -1,24 +1,18 @@
 <style>
-  .el-tag + .el-tag {
-    margin-left: 10px;
-  }
-  .ql-container .ql-editor {
-    min-height: 20em;
-    padding-bottom: 1em;
-    max-height: 25em;
-  }
-  .button-new-tag {
-    margin-left: 10px;
-    height: 32px;
-    line-height: 30px;
-    padding-top: 0;
-    padding-bottom: 0;
-  }
-  .input-new-tag {
-    width: 90px;
-    margin-left: 10px;
-    vertical-align: bottom;
-  }
+.el-input--small {
+  width: 90% !important;
+  left: 0px;
+}
+
+.el-checkbox+.el-checkbox {
+  margin-left: 0px !important;
+}
+
+.ql-container .ql-editor {
+  min-height: 20em;
+  padding-bottom: 1em;
+  max-height: 25em;
+}
 </style>
 
 <template>
@@ -30,26 +24,16 @@
       :before-close="handleDialogClose">
 
       <el-form :model="form">
-
-        <el-form-item label="知识点" >
-          <el-input v-model="form.description" auto-complete="off"></el-input>
-        </el-form-item>
-
-        <el-form-item label="入链" >
-          <br/>
-          <quill-editor 
-              v-model="form.inKnodes">
-            </quill-editor>
-        </el-form-item>
-
-        <el-form-item label="出链" >
-          <br/>
-          <quill-editor 
-              v-model="form.outKnodes">
-            </quill-editor>
-        </el-form-item>
-
+        <Editor v-model="form.content"  />
       </el-form>
+
+      <el-transfer 
+        filterable
+        :titles="['未选', '已选']"
+        v-model="form.links" 
+        :data="knodeList">
+      </el-transfer>
+
       <div slot="footer" class="dialog-footer">
         <el-button @click="handleDialogClose()">取 消</el-button>
         <el-button type="primary" @click="submit()">确 定</el-button>
@@ -60,20 +44,19 @@
 
 <script>
 import axios from 'axios'
+import Editor from '../Editor'
 
 export default {
   props: ['visiable', 'closeHandle', 'getList', 'data', 'status'],
+
   data: function () {
+
     return {
       form: {
-        description: '',
-        code: ''
+        content: '',
+        links: []
       },
-      inputVisible: false,
-      inputValue: '',
-      editorOption: {
-        // some quill options
-      }
+      knodeList: []
     }
   },
 
@@ -81,29 +64,9 @@ export default {
     clear() {
       Object.assign(this.form, {
         _id: null,
-        description: '',
-        code: ''
+        content: '',
+        links: []
       })
-    },
-
-    handleTagClose(tag) {
-      this.form.tags.splice(this.form.tags.indexOf(tag), 1);
-    },
-
-    showTagInput() {
-      this.inputVisible = true;
-      this.$nextTick(_ => {
-        this.$refs.saveTagInput.$refs.input.focus();
-      });
-    },
-
-    handleInputConfirm() {
-      let inputValue = this.inputValue;
-      if (inputValue) {
-        this.form.tags.push(inputValue);
-      }
-      this.inputVisible = false;
-      this.inputValue = '';
     },
 
     handleDialogClose() {
@@ -123,18 +86,20 @@ export default {
       return (form)=> type === 'add' ? this.addRequest(form) : this.editRequest(form)
     },
 
+    transferDataFormate(list) {
+      return list.map((l, i)=>({
+        key: l._id,
+        label: l.title,
+        disabled: false
+      }))
+    },
+
     submit() {
       this.makeRequest(this.status)(this.form)
         .then(val=>{
           this.handleDialogClose()
           this.getList && this.getList()
         })
-    }
-  },
-
-  computed: {
-    editor() {
-      return this.$refs.myQuillEditor.quill
     }
   },
 
@@ -146,6 +111,14 @@ export default {
         this.clear()
       }
     }
+  },
+
+  components: {Editor},
+
+  async created() {
+    let res = await axios.get('/api/knode/all')
+    
+    this.knodeList = this.transferDataFormate(res.data)
   }
 }
 </script>

@@ -1,5 +1,5 @@
 {
-  "name": "cms",
+  "name": "leen-admin",
   "version": "1.0.0",
   "description": "知识管理系统",
   "author": "leenjq <13840918032@163.com>",
@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "axios": "^0.17.1",
-    "element-ui": "^2.0.5",
+    "element-ui": "^2.0.8",
     "vue": "^2.5.2",
     "vue-quill-editor": "^2.3.3",
     "vue-router": "^3.0.1"

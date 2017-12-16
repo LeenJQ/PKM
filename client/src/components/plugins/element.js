@@ -17,7 +17,9 @@ import {
   FormItem,
   Tag,
   Collapse,
-  CollapseItem
+  CollapseItem,
+  Pagination,
+  Transfer
 } from 'element-ui'
 
 const EleComp = {
@@ -39,7 +41,9 @@ const EleComp = {
   FormItem,
   Tag,
   Collapse,
-  CollapseItem
+  CollapseItem,
+  Pagination,
+  Transfer
 }
 
 export default (Vue) => {

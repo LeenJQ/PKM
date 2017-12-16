@@ -4,7 +4,7 @@
       size="mini"
       type="danger"
       @click="handleAdd">新增</el-button>
-    <AddDialog 
+    <Layer 
       :visiable="AddDialogVisiable" 
       :closeHandle="closeAddDialog" 
       :getList="getList"
@@ -13,19 +13,25 @@
     <Tables 
       :data="tableData"
       :editHandle="handleEdit"
-      :deletHandle="deletHandle"></Tables>
+      :deletHandle="deletHandle"
+      :getList="getList"></Tables>
   </div>
 </template>
 
 <script>
 import axios from 'axios'
 import Tables from './table'
-import AddDialog from './addDialog'
+import Layer from './layer'
 
 export default {
   data() {
     return {
-      tableData: [],
+      tableData: {
+        list: [],
+        pageIndex: 1,
+        total: 0
+      },
+      flag: true, 
       AddDialogVisiable: false,
       dialogForm: {},
       dialogStatus: 'add'
@@ -51,13 +57,20 @@ export default {
       this.dialogForm = {}
       this.AddDialogVisiable = false      
     },
-    getList() {
-      axios.get('/api/knode/list').then(val=>this.tableData = val.data)      
+    async getList(index=1) {
+      // 解决分页重复请求的问题
+      // https://github.com/ElemeFE/element/issues?page=2&q=pagination+request&utf8=%E2%9C%93 
+      if(this.flag) {
+        this.flag = false        
+        const {data} = await axios.get('/api/knode/list?pageIndex='+index)  
+        this.tableData = data
+        this.flag = true        
+      }
     }
   },
   components: {
     Tables,
-    AddDialog
+    Layer
   },
   mounted() {
     this.getList()
